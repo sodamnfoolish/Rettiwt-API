@@ -252,9 +252,6 @@ export class TweetEntities {
  * @public
  */
 export class TweetMedia {
-	/** media thumbnail url. */
-	public thumbUrl?: string;
-
 	/** The type of media. */
 	public type: EMediaType;
 
@@ -266,31 +263,6 @@ export class TweetMedia {
 	 */
 	public constructor(media: IRawExtendedMedia) {
 		this.type = media.type;
-
-		// If the media is a photo
-		if (media.type == EMediaType.PHOTO) {
-			this.url = media.media_url_https;
-		}
-		// If the media is a gif
-		else if (media.type == EMediaType.GIF) {
-			this.url = media.video_info?.variants[0].url as string;
-		}
-		// If the media is a video
-		else {
-			/** The highest bitrate of all variants. */
-			let highestRate: number = 0;
-
-			this.thumbUrl = media.media_url_https;
-
-			/**
-			 * Selecting the URL of the video variant with the highest bitrate.
-			 */
-			media.video_info?.variants.forEach((variant) => {
-				if (variant.bitrate > highestRate) {
-					highestRate = variant.bitrate;
-					this.url = variant.url;
-				}
-			});
-		}
+		this.url = media.media_url_https;
 	}
 }
