@@ -108,7 +108,11 @@ export class Tweet {
 			return new Tweet((tweet.quoted_status_result.result as ILimitedVisibilityTweet).tweet);
 		}
 		// If normal tweet
-		else if (tweet.quoted_status_result && Object.entries(tweet.quoted_status_result).length) {
+		else if (
+			tweet.quoted_status_result &&
+			Object.entries(tweet.quoted_status_result).length &&
+			tweet.quoted_status_result.result.__typename != 'TweetTombstone'
+		) {
 			return new Tweet(tweet.quoted_status_result.result as ITweet);
 		}
 		// Else, skip
