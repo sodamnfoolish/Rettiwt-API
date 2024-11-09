@@ -5,6 +5,8 @@ import { IRettiwtConfig } from '../../types/RettiwtConfig';
 
 import { FetcherService } from './FetcherService';
 
+const requiredCookieNames = ['kdt', 'auth_token', 'ct0', 'twid'];
+
 /**
  * The services that handles authentication.
  *
@@ -30,7 +32,17 @@ export class AuthService extends FetcherService {
 		// Decoding the encoded cookie string
 		const decodedCookies: string = Buffer.from(encodedCookies, 'base64').toString('ascii');
 
-		return decodedCookies;
+		if (requiredCookieNames.every((cookieName) => decodedCookies.includes(`${cookieName}=`)))
+			return decodedCookies;
+
+		const decodedCookieArray = JSON.parse(Buffer.from(encodedCookies, 'base64').toString('ascii')) as Array<{
+			name: string;
+			value: string;
+		}>;
+
+		const requiredDecodedCookieArray = decodedCookieArray.filter((c) => requiredCookieNames.includes(c.name));
+
+		return requiredDecodedCookieArray.map((c) => `${c.name}=${c.value}`).join(';');
 	}
 
 	/**
